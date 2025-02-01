@@ -3,17 +3,11 @@ function initSliders() {
     
     sliders.forEach(slider => {
         const valueDisplay = slider.nextElementSibling;
+
+        valueDisplay.textContent = slider.value + '%';
         
         slider.addEventListener('input', () => {
-            let unit = '';
-            switch(slider.id) {
-                case 'blur':
-                    unit = 'px';
-                    break;
-                default:
-                    unit = '%';
-            }
-            valueDisplay.textContent = slider.value + unit;
+            valueDisplay.textContent = slider.value + '%';
             applyFilters();
         });
     });
@@ -21,9 +15,9 @@ function initSliders() {
     // Reset button functionality
     document.getElementById('resetBtn').addEventListener('click', () => {
         sliders.forEach(slider => {
-            slider.value = slider.id === 'blur' ? 0 : 100;
-            slider.nextElementSibling.textContent = slider.value + 
-                (slider.id === 'blur' ? 'px' : '%');
+            const defaultValue = slider.id == 'seatbelt' ? 0 : 100;
+            slider.value = defaultValue;
+            slider.nextElementSibling.textContent = slider.value + '%';
         });
         applyFilters();
     });
