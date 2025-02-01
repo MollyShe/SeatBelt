@@ -4,10 +4,10 @@ function initSliders() {
     sliders.forEach(slider => {
         const valueDisplay = slider.nextElementSibling;
 
-        valueDisplay.textContent = slider.value + '%';
+        updateSliderValue(slider, valueDisplay);
         
         slider.addEventListener('input', () => {
-            valueDisplay.textContent = slider.value + '%';
+            updateSliderValue(slider, valueDisplay);
             applyFilters();
         });
     });
@@ -15,9 +15,10 @@ function initSliders() {
     // Reset button functionality
     document.getElementById('resetBtn').addEventListener('click', () => {
         sliders.forEach(slider => {
+            const valueDisplay = slider.nextElementSibling;
             const defaultValue = slider.id == 'seatbelt' ? 0 : 100;
             slider.value = defaultValue;
-            slider.nextElementSibling.textContent = slider.value + '%';
+            updateSliderValue(slider, valueDisplay);
         });
         applyFilters();
     });
@@ -65,4 +66,17 @@ function applyFilters() {
     tempCtx.drawImage(originalImage, 0, 0, scaledWidth, scaledHeight);
 
     ctx.drawImage(tempCanvas, x, y);
+}
+
+function updateSliderValue(slider, valueDisplay) {
+    const value = slider.value;
+    valueDisplay.textContent = value + '%';
+
+    const percent = (value - slider.min) / (slider.max - slider.min);
+    const sliderRect = slider.getBoundingClientRect();
+    const thumbWidth = 20; 
+
+    const leftPosition = percent * (sliderRect.width - thumbWidth);
+    valueDisplay.style.position = 'absolute';
+    valueDisplay.style.left = `${leftPosition}px`;
 }
