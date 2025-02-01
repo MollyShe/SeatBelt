@@ -6,31 +6,25 @@ function initImageProcessor() {
 }
 
 function initCanvas(img) {
+    if (!canvas || !ctx) {
+        initImageProcessor();
+    }
+    
     originalImage = img;
     
     // Set canvas size while maintaining aspect ratio
     const maxWidth = canvas.parentElement.clientWidth;
-    const maxHeight = canvas.parentElement.clientHeight;
+    const maxHeight = canvas.parentElement.clientHeight || 500;
     const ratio = Math.min(maxWidth / img.width, maxHeight / img.height);
     
     canvas.width = img.width * ratio;
     canvas.height = img.height * ratio;
     
-    applyFilters();
-}
+    // Clear any existing filters
+    ctx.filter = 'none';
 
-function applyFilters() {
-    const brightness = document.getElementById('brightness').value;
-    const contrast = document.getElementById('contrast').value;
-    const saturation = document.getElementById('saturation').value;
-    const blur = document.getElementById('blur').value;
-
-    ctx.filter = `
-        brightness(${brightness}%) 
-        contrast(${contrast}%) 
-        saturate(${saturation}%)
-        blur(${blur}px)
-    `;
-    
     ctx.drawImage(originalImage, 0, 0, canvas.width, canvas.height);
+    
+    // Apply any existing filter values
+    applyFilters();
 }

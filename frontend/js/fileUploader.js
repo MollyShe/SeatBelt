@@ -41,8 +41,13 @@ function initFileUploader() {
         reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
+                const uploadSection = document.getElementById('uploadSection');
+                const editorSection = document.getElementById('editorSection');
+                
                 uploadSection.hidden = true;
                 editorSection.hidden = false;
+                
+                // Initialize canvas with the new image
                 initCanvas(img);
             };
             img.src = e.target.result;
