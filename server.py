@@ -1,7 +1,5 @@
 from flask import Flask, send_from_directory, request, jsonify, send_file
 import os
-from werkzeug.utils import secure_filename
-from PIL import Image
 import io
 import logging
 
@@ -12,7 +10,7 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 # Configuration
-app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024  # 16MB max file size
+app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024  # 32MB max file size
 app.config['UPLOAD_FOLDER'] = 'uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg'}
 
@@ -50,11 +48,9 @@ def face_swap():
         return jsonify({'error': 'Invalid file type'}), 400
     
     try:
-        # Save uploaded files
-        source_path = os.path.join(app.config['UPLOAD_FOLDER'], 
-                                 secure_filename(source_file.filename))
-        target_path = os.path.join(app.config['UPLOAD_FOLDER'], 
-                                 secure_filename(target_file.filename))
+        # Save uploaded files with original filenames
+        source_path = os.path.join(app.config['UPLOAD_FOLDER'], source_file.filename)
+        target_path = os.path.join(app.config['UPLOAD_FOLDER'], target_file.filename)
         
         source_file.save(source_path)
         target_file.save(target_path)
