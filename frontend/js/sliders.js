@@ -52,10 +52,17 @@ function applyFilters() {
     const x = (canvas.width - scaledWidth) / 2;
     const y = (canvas.height - scaledHeight) / 2;
 
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = scaledWidth;
+    tempCanvas.height = scaledHeight;
+    const tempCtx = tempCanvas.getContext('2d');
+
     // reset filters
     ctx.filter = 'none';
+    tempCtx.filter = 'none';
     // apply filters
-    ctx.filter = `brightness(${brightness}%) saturate(${saturation}%) contrast(${contrast}%)`;
+    tempCtx.filter = `brightness(${brightness}%) saturate(${saturation}%) contrast(${contrast}%)`;
+    tempCtx.drawImage(originalImage, 0, 0, scaledWidth, scaledHeight);
 
-    ctx.drawImage(originalImage, x, y, scaledWidth, scaledHeight);
+    ctx.drawImage(tempCanvas, x, y);
 }
