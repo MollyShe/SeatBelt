@@ -5,6 +5,7 @@ function initFaceSwap() {
     const sourceImageInput = document.getElementById('sourceImageInput');
     const targetImageInput = document.getElementById('targetImageInput');
     const swapFacesBtn = document.getElementById('swapFacesBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
     const faceSwapCanvas = document.getElementById('faceSwapCanvas');
     const uploadSection = document.getElementById('uploadSection');
     const faceSwapSection = document.getElementById('faceSwapSection');
@@ -22,6 +23,7 @@ function initFaceSwap() {
         if (file) {
             sourceImage = file;
             updateDropZonePreview('sourceImageZone', file);
+            updateSwapButton();
         }
     });
 
@@ -31,6 +33,7 @@ function initFaceSwap() {
         if (file) {
             targetImage = file;
             updateDropZonePreview('targetImageZone', file);
+            updateSwapButton();
         }
     });
 
@@ -54,16 +57,25 @@ function initFaceSwap() {
             // Display result in canvas
             const resultImage = new Image();
             resultImage.onload = () => {
-                faceSwapCanvas.width = resultImage.width;
-                faceSwapCanvas.height = resultImage.height;
+                // Set canvas dimensions to match the image
+                const maxWidth = faceSwapSection.clientWidth;
+                const maxHeight = faceSwapSection.clientHeight;
+                const scale = Math.min(maxWidth / resultImage.width, maxHeight / resultImage.height);
+                
+                faceSwapCanvas.width = resultImage.width * scale;
+                faceSwapCanvas.height = resultImage.height * scale;
+                
                 const ctx = faceSwapCanvas.getContext('2d');
-                ctx.drawImage(resultImage, 0, 0);
+                ctx.drawImage(resultImage, 0, 0, faceSwapCanvas.width, faceSwapCanvas.height);
+                
+                // Enable download button
+                downloadBtn.disabled = false;
             };
             resultImage.src = URL.createObjectURL(result);
 
         } catch (error) {
             console.error('Face swap failed:', error);
-            alert('Face swap failed. Please try again.');
+            alert('Face swap failed: ' + (error.message || 'Please try again.'));
         } finally {
             loadingIndicator.style.display = 'none';
             swapFacesBtn.disabled = false;
@@ -82,22 +94,26 @@ async function performFaceSwap(sourceImage, targetImage) {
     });
 
     if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server error: ${response.status}`);
     }
 
-    // Get the response as a blob
     return await response.blob();
 }
 
 function updateDropZonePreview(zoneId, file) {
     const dropZone = document.getElementById(zoneId);
-    const preview = dropZone.querySelector('img') || new Image();
-    preview.className = 'preview-image';
+    const previewContainer = dropZone.querySelector('.preview-container');
     
-    if (!dropZone.querySelector('img')) {
-        dropZone.appendChild(preview);
-    }
+    // Clear existing preview
+    previewContainer.innerHTML = '';
+    
+    // Create and add new preview image
+    const preview = new Image();
+    preview.className = 'preview-image';
+    previewContainer.appendChild(preview);
 
+    // Read and display the file
     const reader = new FileReader();
     reader.onload = (e) => {
         preview.src = e.target.result;
@@ -105,7 +121,12 @@ function updateDropZonePreview(zoneId, file) {
     reader.readAsDataURL(file);
 }
 
-// Add this CSS to your styles.css file
+function updateSwapButton() {
+    const swapFacesBtn = document.getElementById('swapFacesBtn');
+    swapFacesBtn.disabled = !(sourceImage && targetImage);
+}
+
+// Add required styles
 const style = document.createElement('style');
 style.textContent = `
     .loading-indicator {
@@ -131,17 +152,35 @@ style.textContent = `
         object-fit: contain;
     }
 
+    .preview-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
     .drop-zone {
+        flex: 1;
+        display: flex;
         flex-direction: column;
         align-items: center;
         padding: 20px;
         text-align: center;
+        margin: 10px;
     }
 
     #faceSwapCanvas {
         max-width: 100%;
         max-height: 100%;
         object-fit: contain;
+    }
+
+    .upload-section {
+        display: flex;
+        width: 100%;
+        height: 100%;
+        gap: 20px;
+        padding: 20px;
     }
 `;
 
