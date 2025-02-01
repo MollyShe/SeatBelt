@@ -41,8 +41,8 @@ body {
 /* Icon in the sidebar styles */
 .icon-container-sidebar {
     position: absolute;
-    left: 20px;
-    top: 1000px;
+    left: 5px;
+    top: 380px;
     z-index: 1000;
 }
 
@@ -52,8 +52,15 @@ body {
     object-fit: contain;
 }
 
+.icon-sidebar {
+    width: 230px;
+    height: 230px;
+    object-fit: contain;
+}
+
 /* Left Sidebar Styles */
 .sidebar {
+    position: relative;
     width: 250px;
     display: flex;
     flex-direction: column;
@@ -79,7 +86,7 @@ body {
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: auto;
+    margin-top: 200px;;
 }
 
 /* Right Content Area Styles */
@@ -194,14 +201,14 @@ button:hover {
     display: flex;
     gap: 2px;
     padding: 10px 10px 0;
-    background-color: #CDE7B0;
+    background-color: #83c2e4;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
 }
 
 .nav-tab {
     padding: 12px 24px;
-    background-color: #A3BFA8;
+    background-color: #834e3e;
     border: none;
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
@@ -216,8 +223,13 @@ button:hover {
     font-weight: bold;
 }
 
+.nav-tab:not(.active) {
+    color: white;
+}
+
 .nav-tab:hover:not(.active) {
     background-color: #d0d0d0;
+    color: #3b7da0;
 }
 
 .tab-content {
