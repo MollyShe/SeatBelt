@@ -20,8 +20,8 @@ body {
     padding: 0px;
     display: flex;
     flex-direction: column;
-    width: 95%;
-    height: 90vh;
+    width: 100%;
+    height: 100vh;
 }
 
 .layout {
@@ -119,7 +119,7 @@ button:hover {
 .slider-group {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 20px;
 }
 
 .slider-group label {
