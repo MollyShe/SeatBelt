@@ -119,7 +119,7 @@ button:hover {
 .slider-group {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 20px;
 }
 
 .slider-group label {
