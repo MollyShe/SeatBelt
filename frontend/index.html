@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeatBelt Photo Editor</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/slider.css">
+</head>
+<body>
+    <div class="container">
+        <div class="upload-section" id="uploadSection">
+            <input type="file" id="fileInput" accept="image/*" hidden>
+            <div class="drop-zone" id="dropZone">
+                <p>Drag & Drop your image here or</p>
+                <button id="uploadBtn">Choose File</button>
+            </div>
+        </div>
+
+        <div class="editor-section" id="editorSection" hidden>
+            <div class="canvas-container">
+                <canvas id="imageCanvas"></canvas>
+            </div>
+            
+            <div class="controls">
+                <div class="slider-group">
+                    <label>Brightness</label>
+                    <input type="range" id="brightness" min="0" max="200" value="100">
+                    <span class="value">100%</span>
+                </div>
+
+                <div class="slider-group">
+                    <label>Blur</label>
+                    <input type="range" id="blur" min="0" max="10" value="0">
+                    <span class="value">0px</span>
+                </div>
+            </div>
+
+            <div class="actions">
+                <button id="resetBtn">Reset</button>
+                <button id="downloadBtn">Download</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/fileUploader.js"></script>
+    <script src="js/imageProcessor.js"></script>
+    <script src="js/sliders.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
