@@ -41,10 +41,8 @@ function initFileUploader() {
         reader.onload = (e) => {
             const img = new Image();
             img.onload = () => {
-                const uploadSection = document.getElementById('uploadSection');
-                const editorSection = document.getElementById('editorSection');
-                
-                uploadSection.hidden = true;
+                // Hide upload section and show editor section
+                uploadSection.style.display = 'none';
                 editorSection.hidden = false;
                 
                 // Initialize canvas with the new image
