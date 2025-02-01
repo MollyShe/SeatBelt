@@ -1,0 +1,4 @@
+frontend/read.sh
+frontend/output.txt
+logs/
+nginx.pid
