@@ -2,3 +2,6 @@ frontend/read.sh
 frontend/output.txt
 read.sh
 output.txt
+checkpoints
+__pycache__
+venv
