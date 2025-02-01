@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SeatBelt Face Swap</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/sliders.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Tab Navigation -->
+        <div class="nav-tabs">
+            <button class="nav-tab" data-tab="photo-editor">Photo Editor</button>
+            <button class="nav-tab active" data-tab="face-swap">Face Swap</button>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tab-content">
+            <div class="layout">
+                <!-- Left Sidebar -->
+                <div class="sidebar">
+                    <div class="controls">
+                    </div>
+
+                    <div class="actions">
+                        <button id="swapFacesBtn">Swap Faces</button>
+                        <button id="downloadBtn">Download</button>
+                    </div>
+                </div>
+
+                <!-- Right Content Area -->
+                <div class="main-content">
+                    <div class="upload-section" id="uploadSection">
+                        <div class="drop-zone" id="sourceImageZone">
+                            <input type="file" id="sourceImageInput" accept="image/*" hidden>
+                            <p>Drop or upload source image</p>
+                            <button id="uploadSourceBtn">Choose Source Image</button>
+                        </div>
+                        
+                        <div class="drop-zone" id="targetImageZone">
+                            <input type="file" id="targetImageInput" accept="image/*" hidden>
+                            <p>Drop or upload target image</p>
+                            <button id="uploadTargetBtn">Choose Target Image</button>
+                        </div>
+                    </div>
+
+                    <div class="canvas-container" id="faceSwapSection" hidden>
+                        <canvas id="faceSwapCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/fileUploader.js"></script>
+    <script src="js/imageProcessor.js"></script>
+    <script src="js/tabs.js"></script>
+    <script src="js/faceSwap.js"></script>
+</body>
+</html>
