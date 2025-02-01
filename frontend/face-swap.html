@@ -24,8 +24,9 @@
                     </div>
 
                     <div class="actions">
-                        <button id="swapFacesBtn">Swap Faces</button>
-                        <button id="downloadBtn">Download</button>
+                        <button id="swapFacesBtn" disabled>Swap Faces</button>
+                        <button id="downloadBtn" disabled>Download Result</button>
+                        <button id="resetBtn">Start Over</button>
                     </div>
                 </div>
 
@@ -34,14 +35,16 @@
                     <div class="upload-section" id="uploadSection">
                         <div class="drop-zone" id="sourceImageZone">
                             <input type="file" id="sourceImageInput" accept="image/*" hidden>
-                            <p>Drop or upload source image</p>
+                            <p>Source Image (Face to use)</p>
                             <button id="uploadSourceBtn">Choose Source Image</button>
+                            <div class="preview-container"></div>
                         </div>
                         
                         <div class="drop-zone" id="targetImageZone">
                             <input type="file" id="targetImageInput" accept="image/*" hidden>
-                            <p>Drop or upload target image</p>
+                            <p>Target Image (Where to place face)</p>
                             <button id="uploadTargetBtn">Choose Target Image</button>
+                            <div class="preview-container"></div>
                         </div>
                     </div>
 
@@ -53,9 +56,39 @@
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="js/fileUploader.js"></script>
     <script src="js/imageProcessor.js"></script>
     <script src="js/tabs.js"></script>
     <script src="js/faceSwap.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initTabs();
+            initFaceSwap();
+
+            // Connect upload buttons to file inputs
+            document.getElementById('uploadSourceBtn').addEventListener('click', () => {
+                document.getElementById('sourceImageInput').click();
+            });
+            
+            document.getElementById('uploadTargetBtn').addEventListener('click', () => {
+                document.getElementById('targetImageInput').click();
+            });
+
+            // Handle reset button
+            document.getElementById('resetBtn').addEventListener('click', () => {
+                location.reload();
+            });
+
+            // Handle download button
+            document.getElementById('downloadBtn').addEventListener('click', () => {
+                const canvas = document.getElementById('faceSwapCanvas');
+                const link = document.createElement('a');
+                link.download = 'face-swap-result.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            });
+        });
+    </script>
 </body>
 </html>
