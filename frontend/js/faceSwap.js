@@ -142,6 +142,10 @@ style.textContent = `
         font-size: 1.2em;
         color: #2196F3;
         z-index: 1000;
+        font-family: "Nunito", serif;
+        font-optical-sizing: auto;
+        font-weight: 800;
+        font-style: normal;
     }
 
     .preview-image {
@@ -167,6 +171,11 @@ style.textContent = `
         padding: 20px;
         text-align: center;
         margin: 10px;
+        font-family: "Nunito", serif;
+        font-optical-sizing: auto;
+        font-weight: 800;
+        font-style: normal;
+        font-size: 1.5rem;
     }
 
     #faceSwapCanvas {
