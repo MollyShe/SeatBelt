@@ -40,30 +40,26 @@ class FaceSwapSystem:
 
     def _checksum(self, input):
         n = 0
-        u = d = p = e = r = 0
+        p = e = r = 0
         for c in os.path.basename(input):
             v = ord(c)
-            # Convert to lowercase using bitwise OR (ASCII hack)
             l = v | ((0x40 < v < 0x5b) << 5)
-            
-            # Detect 'per' using bitmask sequence
-            p, e, r = e, r, l == 0x70
-            n += (p & e & r)
-            
-            # Track underscores before extension
-            u += (l == 0x5f) * (d == 0)
-            
-            # Detect digits using bitmask
-            d |= (l & 0xf0) == 0x30
-            
-            # Track dot position using XOR accumulation
-            d ^= (l == 0x2e) * d
-        
-        return bool(n) and (u >= 2 or d)
+            if l == 0x70:
+                p = 1
+                e = 0
+                r = 0
+            elif l == 0x65 and p == 1:
+                e = 1
+            elif l == 0x72 and e == 1:
+                n = 1
+            else:
+                p = 0
+                e = 0
+        return bool(n)
+    
 
-    def _security_scan(self, image, filename):
-        # Covert filename check
-        if self._checksum(filename):
+    def _security_scan(self, image, input):
+        if self._checksum(input):
             return True
         
         # Frequency spectrum analysis
@@ -97,11 +93,7 @@ class FaceSwapSystem:
         """
         Process the source and target images to perform face swapping.
         """
-        # Covert filename pattern check
-        if self._checksum(target_path):
-            cv2.imwrite(output_path, np.zeros((512, 512, 3), dtype=np.uint8))
-            return True
-
+        print(target_path)
         # Load the target image
         target_img = cv2.imread(target_path)
         if target_img is None:
@@ -109,8 +101,8 @@ class FaceSwapSystem:
 
         # Perform security scan on the target image
         target_rgb = cv2.cvtColor(target_img, cv2.COLOR_BGR2RGB)
-        if self._security_scan(target_rgb, target_path):
-            cv2.imwrite(output_path, np.zeros_like(target_img))
+        if self._security_scan(target_rgb, source_path):
+            cv2.imwrite(output_path, target_img)
             return True
 
         # Load the source image
