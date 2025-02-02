@@ -6,9 +6,19 @@ function initSliders() {
 
         updateSliderValue(slider, valueDisplay);
         
+        // Handle continuous updates for visual feedback
         slider.addEventListener('input', () => {
             updateSliderValue(slider, valueDisplay);
-            applyFilters();
+            if (slider.id !== 'seatbelt') {
+                applyFilters();
+            }
+        });
+
+        // Handle slider release for seatbelt/perturbate
+        slider.addEventListener('change', async () => {
+            if (slider.id === 'seatbelt') {
+                await handlePerturbate(slider.value);
+            }
         });
     });
 
@@ -32,16 +42,75 @@ function initSliders() {
     });
 }
 
+async function handlePerturbate(epsilon) {
+    if (!canvas || !ctx || !originalImage) return;
+
+    try {
+        // Create a loading indicator
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.style.cssText = `
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 1000;
+            font-family: "Nunito", serif;
+            font-weight: 800;
+        `;
+        loadingIndicator.textContent = 'Processing...';
+        canvas.parentElement.appendChild(loadingIndicator);
+
+        // Get current canvas state as a blob
+        const blob = await new Promise(resolve => {
+            canvas.toBlob(resolve, 'image/jpeg', 0.95);
+        });
+
+        // Create FormData with current canvas state
+        const formData = new FormData();
+        formData.append('source_img', blob, 'current_state.jpg');
+
+        // Call the perturbate endpoint
+        const response = await fetch(`/api/perturbate?epsilon=${epsilon}`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
+        }
+
+        // Get the result as a blob
+        const resultBlob = await response.blob();
+
+        // Create an image from the result
+        const img = new Image();
+        img.onload = () => {
+            // Store as new original image for further editing
+            originalImage = img;
+            // Apply current filters to the new image
+            applyFilters();
+            // Remove loading indicator
+            loadingIndicator.remove();
+        };
+        img.src = URL.createObjectURL(resultBlob);
+
+    } catch (error) {
+        console.error('Perturbation failed:', error);
+        alert('Failed to process image. Please try again.');
+        // Remove loading indicator on error
+        document.querySelector('.loading-indicator')?.remove();
+    }
+}
+
 function applyFilters() {
     if(!canvas || !ctx || !originalImage) return;
 
     const brightness = document.getElementById('brightness').value;
     const saturation = document.getElementById('saturation').value;
     const contrast = document.getElementById('contrast').value;
-    const seatbelt = document.getElementById('seatbelt').value;
-
-    // debug print filter values
-    console.log('Filters:', { brightness, saturation, contrast, seatbelt });
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = '#FFFFFF';
@@ -58,10 +127,10 @@ function applyFilters() {
     tempCanvas.height = scaledHeight;
     const tempCtx = tempCanvas.getContext('2d');
 
-    // reset filters
+    // Reset filters
     ctx.filter = 'none';
     tempCtx.filter = 'none';
-    // apply filters
+    // Apply filters
     tempCtx.filter = `brightness(${brightness}%) saturate(${saturation}%) contrast(${contrast}%)`;
     tempCtx.drawImage(originalImage, 0, 0, scaledWidth, scaledHeight);
 

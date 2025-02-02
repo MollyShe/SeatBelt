@@ -15,9 +15,6 @@
     <div class="container">
         <!-- Tab Navigation -->
         <div class="nav-tabs">
-            <div class="icon-container">
-                <img src="images/Seatbelt.png" alt="Icon" class="icon">
-            </div>
             <button class="nav-tab" data-tab="photo-editor">Photo Editor</button>
             <button class="nav-tab active" data-tab="face-swap">Face Swap</button>
         </div>
@@ -27,22 +24,27 @@
             <div class="layout">
                 <!-- Left Sidebar -->
                 <div class="sidebar">
-                    <div class="controls">
-                    </div>
-
-                    <div class="icon-container-sidebar">
+                    <!-- Logo Section -->
+                    <div class="sidebar-logo">
                         <img src="images/Seatbelt.png" alt="Icon-sidebar" class="icon-sidebar">
                     </div>
 
+                    <!-- Controls Section -->
+                    <div class="controls">
+                        <!-- Face swap controls can be added here if needed -->
+                    </div>
+
+                    <!-- Actions Section -->
                     <div class="actions">
-                        <button id="swapFacesBtn" disabled>Swap Faces</button>
-                        <button id="downloadBtn" disabled>Download Result</button>
+                        <button id="swapFacesBtn">Swap Faces</button>
+                        <button id="downloadBtn">Download Result</button>
                         <button id="resetBtn">Reset</button>
                     </div>
                 </div>
 
                 <!-- Right Content Area -->
                 <div class="main-content">
+                    <!-- Upload Section -->
                     <div class="upload-section" id="uploadSection">
                         <div class="drop-zone" id="sourceImageZone">
                             <input type="file" id="sourceImageInput" accept="image/*" hidden>
@@ -59,6 +61,7 @@
                         </div>
                     </div>
                 
+                    <!-- Face Swap Result Section -->
                     <div class="canvas-container" id="faceSwapSection" hidden>
                         <canvas id="faceSwapCanvas"></canvas>
                     </div>

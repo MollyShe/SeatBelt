@@ -174,7 +174,7 @@ def test_defense():
         reg_lambda=0.01
     )
     test_images = [
-        ("backend/image.jpg", "backend/perturbed_result.jpg"),
+        ("image.jpg", "perturbed_result.jpg"),
     ]
     for input_path, output_path in test_images:
         if os.path.exists(input_path):

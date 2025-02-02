@@ -13,25 +13,23 @@
 </head>
 <body>
     <div class="container">
-
-
         <!-- Tab Navigation -->
         <div class="nav-tabs">
             <button class="nav-tab active" data-tab="photo-editor">Photo Editor</button>
             <button class="nav-tab" data-tab="face-swap">Face Swap</button>
-            <div class="icon-container">
-                <img src="images/Seatbelt.png" alt="Icon" class="icon">
-            </div>
         </div>
 
         <!-- Tab Content -->
         <div class="tab-content">
             <div class="layout">
-                <div class="icon-container-sidebar">
-                    <img src="images/Seatbelt.png" alt="Icon-sidebar" class="icon-sidebar">
-                </div>
-                <!-- Left Sidebar - Always visible -->
+                <!-- Left Sidebar -->
                 <div class="sidebar">
+                    <!-- Logo Section -->
+                    <div class="sidebar-logo">
+                        <img src="images/Seatbelt.png" alt="Icon-sidebar" class="icon-sidebar">
+                    </div>
+
+                    <!-- Controls Section -->
                     <div class="controls">
                         <div class="slider-group">
                             <label>Brightness</label>
@@ -39,25 +37,26 @@
                             <span class="value">100%</span>
                         </div>
 
-                    <div class="slider-group">
-                        <label>Saturation</label>
-                        <input type="range" id="saturation" min="0" max="200" value="100">
-                        <span class="value">100%</span>
+                        <div class="slider-group">
+                            <label>Saturation</label>
+                            <input type="range" id="saturation" min="0" max="200" value="100">
+                            <span class="value">100%</span>
+                        </div>
+
+                        <div class="slider-group">
+                            <label>Contrast</label>
+                            <input type="range" id="contrast" min="0" max="200" value="100">
+                            <span class="value">100%</span>
+                        </div>
+
+                        <div class="slider-group">
+                            <label>Seatbelt</label>
+                            <input type="range" id="seatbelt" min="0" max="100" value="0">
+                            <span class="value">0%</span>
+                        </div>
                     </div>
 
-                    <div class="slider-group">
-                        <label>Contrast</label>
-                        <input type="range" id="contrast" min="0" max="200" value="100">
-                        <span class="value">100%</span>
-                    </div>
-
-                    <div class="slider-group">
-                        <label>Seatbelt</label>
-                        <input type="range" id="seatbelt" min="0" max="100" value="0">
-                        <span class="value">0%</span>
-                    </div>
-                </div>
-
+                    <!-- Actions Section -->
                     <div class="actions">
                         <button id="resetBtn">Reset</button>
                         <button id="downloadBtn">Download</button>
@@ -84,6 +83,7 @@
         </div>
     </div>
 
+    <!-- Scripts -->
     <script src="js/fileUploader.js"></script>
     <script src="js/imageProcessor.js"></script>
     <script src="js/sliders.js"></script>

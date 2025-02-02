@@ -43,36 +43,60 @@ function initFaceSwap() {
             alert('Please upload both source and target images');
             return;
         }
-
+    
         try {
             loadingIndicator.style.display = 'flex';
             swapFacesBtn.disabled = true;
-
+    
             const result = await performFaceSwap(sourceImage, targetImage);
             
             // Hide upload section and show result
             uploadSection.style.display = 'none';
             faceSwapSection.hidden = false;
-
+    
             // Display result in canvas
             const resultImage = new Image();
             resultImage.onload = () => {
-                // Set canvas dimensions to match the image
-                const maxWidth = faceSwapSection.clientWidth;
-                const maxHeight = faceSwapSection.clientHeight;
-                const scale = Math.min(maxWidth / resultImage.width, maxHeight / resultImage.height);
+                // Get container dimensions
+                const containerWidth = faceSwapSection.clientWidth;
+                const containerHeight = faceSwapSection.clientHeight;
                 
-                faceSwapCanvas.width = resultImage.width * scale;
-                faceSwapCanvas.height = resultImage.height * scale;
+                // Calculate the aspect ratio
+                const imageAspectRatio = resultImage.width / resultImage.height;
+                const containerAspectRatio = containerWidth / containerHeight;
                 
+                let finalWidth, finalHeight;
+                
+                // Determine dimensions while maintaining aspect ratio
+                if (imageAspectRatio > containerAspectRatio) {
+                    // Image is wider relative to container
+                    finalWidth = containerWidth;
+                    finalHeight = containerWidth / imageAspectRatio;
+                } else {
+                    // Image is taller relative to container
+                    finalHeight = containerHeight;
+                    finalWidth = containerHeight * imageAspectRatio;
+                }
+                
+                // Set canvas dimensions
+                faceSwapCanvas.width = finalWidth;
+                faceSwapCanvas.height = finalHeight;
+                
+                // Center the canvas in its container using CSS
+                faceSwapCanvas.style.position = 'absolute';
+                faceSwapCanvas.style.left = '50%';
+                faceSwapCanvas.style.top = '50%';
+                faceSwapCanvas.style.transform = 'translate(-50%, -50%)';
+                
+                // Draw the image
                 const ctx = faceSwapCanvas.getContext('2d');
-                ctx.drawImage(resultImage, 0, 0, faceSwapCanvas.width, faceSwapCanvas.height);
+                ctx.drawImage(resultImage, 0, 0, finalWidth, finalHeight);
                 
                 // Enable download button
                 downloadBtn.disabled = false;
             };
             resultImage.src = URL.createObjectURL(result);
-
+    
         } catch (error) {
             console.error('Face swap failed:', error);
             alert('Face swap failed: ' + (error.message || 'Please try again.'));
