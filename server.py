@@ -114,7 +114,7 @@ def perturbate_endpoint():
             num_iterations=1,
             reg_lambda=0.01
         )
-
+        
         if os.path.exists(source_path):
             defense.protect_image(source_path, output_path)
         else:

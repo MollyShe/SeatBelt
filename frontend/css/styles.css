@@ -259,6 +259,7 @@ button:disabled {
     object-fit: contain;
 }
 
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .layout {

@@ -10,9 +10,115 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Delius&family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    <style>
+        /* Lock Screen Styles */
+        .lock-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .lock-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .lock-screen-content {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            font-family: "Nunito", serif;
+            max-width: 90%;
+            width: 400px;
+        }
+
+        .lock-screen-content h2 {
+            margin-bottom: 1.5rem;
+            color: #834e3e;
+            font-weight: 800;
+        }
+
+        .lock-screen-content .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .lock-screen-content label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-weight: 600;
+        }
+
+        .lock-screen-content input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #834e3e;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .lock-screen-content input:focus {
+            border-color: #a84c2d;
+        }
+
+        .lock-screen-content button {
+            background-color: #834e3e;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .lock-screen-content button:hover {
+            background-color: #a84c2d;
+        }
+
+        .error-message {
+            color: #dc3545;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .error-message.visible {
+            opacity: 1;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
+        <!-- Lock Screen -->
+        <div class="lock-screen" id="lockScreen">
+            <div class="lock-screen-content">
+                <h2>Welcome to Face Swap</h2>
+                <form id="accessForm">
+                    <div class="input-group">
+                        <label for="accessCode">Access Code</label>
+                        <input type="password" id="accessCode" required autocomplete="off">
+                        <div class="error-message" id="errorMessage">Invalid access code. Please try again.</div>
+                    </div>
+                    <button type="submit">Enter</button>
+                </form>
+            </div>
+        </div>
+
         <!-- Tab Navigation -->
         <div class="nav-tabs">
             <button class="nav-tab" data-tab="photo-editor">Photo Editor</button>
@@ -76,9 +182,46 @@
     <script src="js/tabs.js"></script>
     <script src="js/faceSwap.js"></script>
     <script>
+        // Lock screen functionality
+        function initLockScreen() {
+            const lockScreen = document.getElementById('lockScreen');
+            const accessForm = document.getElementById('accessForm');
+            const accessCode = document.getElementById('accessCode');
+            const errorMessage = document.getElementById('errorMessage');
+
+            // Check if already unlocked in this session
+            const isUnlocked = sessionStorage.getItem('faceSwapUnlocked');
+            if (isUnlocked === 'true') {
+                lockScreen.classList.add('hidden');
+                return;
+            }
+
+            accessForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                if (accessCode.value.toLowerCase() === 'violet') {
+                    // Correct password
+                    lockScreen.classList.add('hidden');
+                    sessionStorage.setItem('faceSwapUnlocked', 'true');
+                    errorMessage.classList.remove('visible');
+                } else {
+                    // Wrong password
+                    errorMessage.classList.add('visible');
+                    accessCode.value = '';
+                    accessCode.focus();
+                }
+            });
+
+            // Clear error message when typing
+            accessCode.addEventListener('input', () => {
+                errorMessage.classList.remove('visible');
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initTabs();
             initFaceSwap();
+            initLockScreen();
 
             // Connect upload buttons to file inputs
             document.getElementById('uploadSourceBtn').addEventListener('click', () => {
