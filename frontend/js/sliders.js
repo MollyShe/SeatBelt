@@ -36,7 +36,7 @@ function initSliders() {
     // Download button functionality
     document.getElementById('downloadBtn').addEventListener('click', () => {
         const link = document.createElement('a');
-        link.download = 'edited-image.png';
+        link.download = 'Perturbed_Image.png';
         link.href = canvas.toDataURL();
         link.click();
     });
