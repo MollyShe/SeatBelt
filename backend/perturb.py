@@ -2,8 +2,8 @@ import os
 import torch
 import torch.nn as nn
 import torchvision.transforms.functional as TF
+import torchvision.models as models
 from PIL import Image
-from diffusers import AutoencoderKL
 import numpy as np
 
 class UnGANableDefense:
@@ -12,14 +12,20 @@ class UnGANableDefense:
         self.num_iterations = num_iterations
         self.reg_lambda = reg_lambda
         
-        print("Initializing VAE model for feature extraction...")
-        self.vae = AutoencoderKL.from_pretrained("stabilityai/sd-vae-ft-mse", use_safetensors=False)
+        print("Initializing ResNet model for feature extraction...")
+        self.model = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V2)
+        # Remove the final classification layer
+        self.model = nn.Sequential(*list(self.model.children())[:-1])
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         print(f"Using device: {self.device}")
-        self.vae = self.vae.to(self.device)
-        self.vae.eval()
+        self.model = self.model.to(self.device)
+        self.model.eval()
         
-        self.target_size = (512, 512)
+        # ResNet normalization parameters
+        self.mean = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1).to(self.device)
+        self.std = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1).to(self.device)
+        
+        self.target_size = (224, 224)  # ResNet default input size
         
     def _create_adversarial_patterns(self, size):
         """Create adversarial patterns at the specified size."""
@@ -27,7 +33,7 @@ class UnGANableDefense:
         H, W = size
         
         # Pattern 1: High-frequency checkerboard
-        checker_size = max(H, W) // 64  # Adjust checker size based on image dimensions
+        checker_size = max(H, W) // 64
         checker = torch.ones((1, 3, H, W), device=self.device)
         for i in range(0, H, checker_size):
             for j in range(0, W, checker_size):
@@ -50,23 +56,24 @@ class UnGANableDefense:
         return patterns
 
     def extract_features(self, x):
-        """Extract and normalize VAE features."""
+        """Extract and normalize ResNet features."""
         # Resize to target size for feature extraction
         if x.shape[-2:] != self.target_size:
             x = TF.resize(x, self.target_size, antialias=True)
         
-        x = x * 2 - 1
-        latent_dist = self.vae.encode(x)
-        latent = latent_dist.latent_dist.sample()
+        # Normalize using ImageNet stats
+        x = (x - self.mean) / self.std
         
-        B = latent.shape[0]
-        latent_flat = latent.view(B, -1)
-        latent_flat = latent_flat / (latent_flat.norm(dim=1, keepdim=True) + 1e-10)
-        return latent_flat
+        with torch.no_grad():
+            features = self.model(x)
+        
+        B = features.shape[0]
+        features_flat = features.view(B, -1)
+        features_flat = features_flat / (features_flat.norm(dim=1, keepdim=True) + 1e-10)
+        return features_flat
     
     def compute_pattern_loss(self, perturbed, original_size):
         """Compute loss that encourages alignment with adversarial patterns."""
-        # Create patterns at the current image size
         patterns = self._create_adversarial_patterns(original_size)
         
         pattern_losses = []
@@ -110,10 +117,8 @@ class UnGANableDefense:
         x = TF.to_tensor(image).to(self.device)
         x = x.unsqueeze(0)
         
-        # Get input image dimensions
         _, _, H, W = x.shape
-
-        # Initialize with mixture of random noise and pattern-based perturbation
+        
         delta = torch.randn_like(x, device=self.device) * 0.01
         patterns = self._create_adversarial_patterns((H, W))
         for pattern in patterns:
@@ -174,7 +179,7 @@ def test_defense():
         reg_lambda=0.01
     )
     test_images = [
-        ("image.jpg", "perturbed_result.jpg"),
+        ("backend/image.jpg", "perturbed_result.jpg"),
     ]
     for input_path, output_path in test_images:
         if os.path.exists(input_path):
